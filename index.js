@@ -1,102 +1,72 @@
-const express = require("express");
-const fs = require("fs");
-const path = require("path");
-const serverless = require("serverless-http");
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const chokidar = require('chokidar');
 
 const app = express();
-const __dirnamePath = __dirname;
+const PORT = process.env.PORT || 3000;
 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
-app.use(express.static(path.join(__dirnamePath, "public")));
+app.use(express.urlencoded({ extended: true }));
 
-const pluginsDir = path.join(__dirnamePath, "plugin");
-let loadedRoutes = [];
-let logBuffer = [];
+const pluginsDir = path.join(__dirname, 'plugin');
+let apiRouters = [];
 
-// دالة اللوج
-function log(msg) {
-  const time = new Date().toLocaleTimeString();
-  const full = `[${time}] ${msg}`;
-  console.log(full);
-  logBuffer.push(full);
-  if (logBuffer.length > 1000) logBuffer.shift();
-}
-
-// تحميل البلوجنز
+// دالة تحميل البلوجنز وإنشاء الـ endpoints
 function loadPlugins() {
-  log("🔄 بدء تحميل البلوجنز...");
-  
-  // إزالة أي روت قديم
-  loadedRoutes.forEach(r => {
-    app._router.stack = app._router.stack.filter(
-      layer => !(layer.route && layer.route.path === r.path)
-    );
+  // إزالة الراوترات القديمة
+  apiRouters.forEach(r => {
+    app._router.stack = app._router.stack.filter(layer => layer !== r);
   });
-  loadedRoutes = [];
+  apiRouters = [];
 
-  if (!fs.existsSync(pluginsDir)) {
-    log(`⚠️ مجلد plugins غير موجود: ${pluginsDir}`);
-    return;
-  }
+  // قراءة كل مجلد داخل plugin
+  fs.readdirSync(pluginsDir, { withFileTypes: true }).forEach(folder => {
+    if (folder.isDirectory()) {
+      const folderName = folder.name;
+      const folderPath = path.join(pluginsDir, folderName);
 
-  const sections = fs.readdirSync(pluginsDir);
-  for (const section of sections) {
-    const sectionPath = path.join(pluginsDir, section);
-    if (fs.statSync(sectionPath).isDirectory()) {
-      const files = fs.readdirSync(sectionPath);
-      for (const file of files) {
-        if (file.endsWith(".js")) {
-          const filePath = path.join(sectionPath, file);
+      // قراءة كل ملف JS داخل المجلد
+      fs.readdirSync(folderPath).forEach(file => {
+        if (file.endsWith('.js')) {
+          const fileName = file.replace('.js', '');
+          const filePath = path.join(folderPath, file);
           try {
             delete require.cache[require.resolve(filePath)]; // مسح الكاش
-            const plugin = require(filePath);
-            if (typeof plugin === "function") {
-              const routePath = `/api/${section}/${file.replace(".js", "")}`;
-              const router = express.Router();
-              plugin(router);
-              app.use(routePath, router);
-              loadedRoutes.push({ section, file, path: routePath });
-              log(`✅ Loaded: ${routePath}`);
-            } else {
-              log(`⚠️ الملف ليس بلوجن صالح: ${filePath}`);
-            }
+            const routeHandler = require(filePath);
+
+            // إنشاء endpoint ديناميكي
+            const endpoint = `/api/${folderName}/${fileName}`;
+            app.all(endpoint, (req, res) => {
+              routeHandler(req, res, express);
+            });
+
+            apiRouters.push(endpoint);
+            console.log(`✅ تم تحميل API: ${endpoint}`);
           } catch (err) {
-            log(`❌ خطأ في تحميل ${filePath}: ${err.message}`);
+            console.error(`❌ خطأ في تحميل: ${folderName}/${file}`, err);
           }
         }
-      }
+      });
     }
-  }
-  log(`✨ عدد البلوجنز المحملة: ${loadedRoutes.length}`);
+  });
 }
 
-// تحميل البلوجنز مرة واحدة عند تشغيل السيرفر
+// تحميل البلوجنز أول مرة
 loadPlugins();
 
-// API لإعادة تحميل البلوجنز الجديدة فقط
-app.get("/api/reload", (req, res) => {
-  loadPlugins();
-  res.json({ message: "🔄 البلوجنز تم تحديثها في الذاكرة بدون إعادة تشغيل" });
+// مراقبة أي تغييرات باستخدام chokidar
+const watcher = chokidar.watch(pluginsDir, { ignoreInitial: true, persistent: true });
+
+watcher.on('add', path => loadPlugins());
+watcher.on('unlink', path => loadPlugins());
+watcher.on('addDir', path => loadPlugins());
+watcher.on('unlinkDir', path => loadPlugins());
+
+// صفحة عرض الـ API
+app.get('/api-view', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'page', 'api', 'api.html'));
 });
 
-// API لعرض البلوجنز
-app.get("/api/list", (req, res) => {
-  res.json(loadedRoutes);
-});
-
-// API للّوج
-app.get("/api/logs", (req, res) => {
-  res.json(logBuffer);
-});
-
-// تشغيل السيرفر محلي
-if (!process.env.VERCEL) {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () =>
-    console.log(`🚀 Server running: http://localhost:${PORT}`)
-  );
-}
-
-// تصدير للـ serverless
-module.exports = serverless(app);
+app.listen(PORT, () => console.log(`🚀 السيرفر شغال على http://localhost:${PORT}`));
