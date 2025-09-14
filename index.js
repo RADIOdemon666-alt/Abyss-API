@@ -4,13 +4,14 @@ const path = require("path");
 const serverless = require("serverless-http");
 
 const app = express();
+const __dirnamePath = __dirname; // استخدم __dirname مباشرة
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirnamePath, "public")));
 
 // البلوجنز
-const pluginsDir = path.join(__dirname, "plugin");
+const pluginsDir = path.join(__dirnamePath, "plugin");
 let loadedRoutes = [];
 let logBuffer = [];
 
@@ -51,11 +52,12 @@ async function loadPlugins() {
         if (file.endsWith(".js")) {
           const filePath = path.join(sectionPath, file);
           try {
+            delete require.cache[require.resolve(filePath)]; // مسح الكاش قبل التحميل
             const plugin = require(filePath);
             if (typeof plugin === "function") {
               const routePath = `/api/${section}/${file.replace(".js", "")}`;
               const router = express.Router();
-              plugin(router); // البلوجن يستخدم Router اللي اتعمل هنا
+              plugin(router); // البلوجن يستخدم Router
               app.use(routePath, router);
               loadedRoutes.push({ section, file, path: routePath });
               log(`✅ Loaded: ${routePath}`);
