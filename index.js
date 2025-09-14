@@ -1,7 +1,6 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const { pathToFileURL } = require("url");
 const serverless = require("serverless-http");
 
 const app = express();
@@ -56,7 +55,7 @@ async function loadPlugins() {
             if (typeof plugin === "function") {
               const routePath = `/api/${section}/${file.replace(".js", "")}`;
               const router = express.Router();
-              plugin(router); // تمرير Router فقط
+              plugin(router); // البلوجن يستخدم Router اللي اتعمل هنا
               app.use(routePath, router);
               loadedRoutes.push({ section, file, path: routePath });
               log(`✅ Loaded: ${routePath}`);
