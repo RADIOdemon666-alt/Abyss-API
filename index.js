@@ -23,7 +23,6 @@ function loadPlugins() {
   }
   apiList = {};
 
-  // قراءة مجلد البلوجنز
   fs.readdirSync(pluginsDir, { withFileTypes: true }).forEach(folder => {
     if (folder.isDirectory()) {
       const folderName = folder.name;
@@ -32,22 +31,21 @@ function loadPlugins() {
 
       fs.readdirSync(folderPath).forEach(file => {
         if (file.endsWith('.js')) {
+          const fileName = file.replace('.js', '');
           const filePath = path.join(folderPath, file);
+
           try {
             delete require.cache[require.resolve(filePath)];
-            const plugin = require(filePath);
+            const router = require(filePath)(); // كل بلوجن لازم يرجع Router
 
-            // كل بلوجن لازم يكون عبارة عن دالة ترجع router وكمان endpoint اختياري
-            const router = plugin.router ? plugin.router : plugin();
-            const endpoint = plugin.endpoint || `/api/${folderName}/${file.replace('.js', '')}`;
-
+            const endpoint = `/plugin/${folderName}/${fileName}`;
             app.use(endpoint, router);
 
             // إضافة layer الخاص بالراوتر للمصفوفة
             const layer = app._router.stack[app._router.stack.length - 1];
             apiRouters.push(layer);
 
-            apiList[folderName].push({ name: file.replace('.js', ''), endpoint });
+            apiList[folderName].push({ name: fileName, endpoint });
             console.log(`✅ تم تحميل API: ${endpoint}`);
           } catch (err) {
             console.error(`❌ خطأ في تحميل البلوجن: ${folderName}/${file}`, err);
