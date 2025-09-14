@@ -2,7 +2,6 @@ import express from "express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
-import cookieParser from "cookie-parser";
 import serverless from "serverless-http";
 
 const app = express();
@@ -11,39 +10,14 @@ const __dirname = path.dirname(__filename);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname,"public")));
-
-// بيانات الادمن
-const ADMIN_NUMBER = "01500564191";
-const ADMIN_PASSWORD = "N7D3AnaEedY";
-
-// إعداد ملف قاعدة البيانات المحلية
-const dbDir = path.join(__dirname,"database");
-const dbFile = path.join(dbDir,"database.json");
-
-if(!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive:true });
-if(!fs.existsSync(dbFile)) fs.writeFileSync(dbFile, JSON.stringify({ users: [] }, null,2));
-
-// دوال لإدارة البيانات
-function readDB() {
-  return JSON.parse(fs.readFileSync(dbFile,"utf8"));
-}
-function writeDB(data) {
-  fs.writeFileSync(dbFile, JSON.stringify(data,null,2));
-}
-
-// Middleware للتحقق من الادمن
-function adminAuth(req,res,next){
-  if(req.cookies.admin === "true") return next();
-  res.redirect("/home");
-}
 
 // البلوجنز
 const pluginsDir = path.join(__dirname,"plugin");
 let loadedRoutes = [];
 let logBuffer = [];
 
+// دالة لكتابة اللوج
 function log(msg){
   const time = new Date().toLocaleTimeString();
   const full = `[${time}] ${msg}`;
@@ -55,6 +29,7 @@ function log(msg){
 // تحميل البلوجنز
 async function loadPlugins(){
   log("🔄 بدء تحميل البلوجنز...");
+  // إزالة أي روت قديم
   loadedRoutes.forEach(r=>{
     app._router.stack = app._router.stack.filter(
       layer => !(layer.route && layer.route.path === r.path)
@@ -98,44 +73,20 @@ async function loadPlugins(){
   log(`✨ عدد البلوجنز المحملة: ${loadedRoutes.length}`);
 }
 
-// تسجيل دخول الادمن أو المستخدم
-app.post("/login",(req,res)=>{
-  const { number, password } = req.body;
-  if(number===ADMIN_NUMBER && password===ADMIN_PASSWORD){
-    res.cookie("admin","true",{maxAge:30*60*1000,httpOnly:true});
-    return res.redirect("/");
-  }
-  const db = readDB();
-  const user = db.users.find(u=>u.phone===number && u.password===password);
-  if(user) return res.redirect("/");
-  res.redirect("/home");
-});
-
-// تسجيل مستخدم جديد
-app.post("/register",(req,res)=>{
-  const { name, phone, email, password } = req.body;
-  if(!name||!phone||!email||!password) return res.redirect("/home");
-  const db = readDB();
-  if(db.users.find(u=>u.phone===phone)) return res.redirect("/home");
-  db.users.push({ name, phone, email, password });
-  writeDB(db);
-  res.redirect("/login");
-});
-
 // إعادة تحميل البلوجنز
-app.get("/api/reload", adminAuth, async (req,res)=>{
+app.get("/api/reload", async (req,res)=>{
   await loadPlugins();
   res.json({ loaded: loadedRoutes.length });
 });
 
 // قائمة البلوجنز
-app.get("/api/list", adminAuth, async (req,res)=>{
+app.get("/api/list", async (req,res)=>{
   await loadPlugins();
   res.json(loadedRoutes);
 });
 
-// Dashboard الادمن مع كونسول لوج
-app.get("/", adminAuth, async (req,res)=>{
+// Dashboard للبلوجنز مع اللوج
+app.get("/", async (req,res)=>{
   await loadPlugins();
   res.send(`
 <!DOCTYPE html>
@@ -189,12 +140,12 @@ navigator.clipboard.writeText(links).then(()=>alert('✅ Links copied!'));
   `);
 });
 
-// Home page
+// صفحة الهوم (اختياري)
 app.get("/home",(req,res)=>{
   res.sendFile(path.join(__dirname,"public/page/home/home.html"));
 });
 
-// تشغيل السيرفر لو محلي
+// تشغيل السيرفر محلي
 if(!process.env.VERCEL){
   app.listen(3000,()=>console.log("🚀 Server running: http://localhost:3000"));
 }
