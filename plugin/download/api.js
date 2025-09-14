@@ -1,5 +1,7 @@
 // plugin/download/api.js
-export default (express) => {
+const express = require("express");
+
+module.exports = () => {
   const router = express.Router();
 
   router.get("/hello", (req, res) => {
