@@ -1,0 +1,27 @@
+{
+  "name": "rest-api-abyss",
+  "version": "1.0.0",
+  "description": "REST API Abyss project using Node.js, Express, Plugins system",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "@whiskeysockets/baileys": "^7.0.0",
+    "cheerio": "^1.0.0",
+    "express": "^4.21.1",
+    "node-fetch": "^3.3.2",
+    "puppeteer": "^23.7.1",
+    "puppeteer-cluster": "^0.23.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  },
+  "author": "Radio Demon (dev)",
+  "license": "MIT"
+}
