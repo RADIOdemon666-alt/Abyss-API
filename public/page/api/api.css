@@ -1,0 +1,104 @@
+/* === Reset === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* === Fonts === */
+body {
+  font-family: 'Fira Code', monospace;
+  background: linear-gradient(135deg, #0a0a0a, #000);
+  color: #eee;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* === Header === */
+header {
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(5px);
+  background: rgba(0,0,0,0.5);
+  padding: 20px;
+  border-bottom: 2px solid #8a2be2;
+  text-align: center;
+  z-index: 10;
+}
+
+header h1 {
+  font-family: 'Orbitron', sans-serif;
+  color: #00faff;
+  text-shadow: 0 0 10px #00faff, 0 0 20px #8a2be2;
+  margin-bottom: 5px;
+}
+
+header p {
+  color: #8a2be2;
+  font-size: 14px;
+}
+
+/* === Grid Sections === */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 25px;
+  padding: 40px;
+}
+
+/* === Card === */
+.card {
+  background: rgba(20,20,20,0.8);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  box-shadow: 0 0 10px #8a2be2, 0 0 20px #00faff;
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+  border: 2px solid #00faff;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px #ff003c, 0 0 25px #8a2be2, 0 0 30px #00faff;
+  border-color: #ff003c;
+}
+
+/* === API Bar === */
+#api-bar {
+  padding: 20px;
+  background: rgba(15,15,15,0.9);
+  border-radius: 12px;
+  margin: 30px;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.hidden { display: none; }
+
+#back-btn {
+  background: transparent;
+  border: 2px solid #00faff;
+  color: #00faff;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  font-family: 'Orbitron', sans-serif;
+  transition: all 0.3s ease;
+}
+
+#back-btn:hover {
+  box-shadow: 0 0 10px #00faff, 0 0 20px #8a2be2;
+  transform: scale(1.05);
+}
+
+/* === API List === */
+#api-list .api-item {
+  background: rgba(30,30,30,0.8);
+  border-left: 5px solid #ff003c;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 0 5px #ff003c;
+}
+
+/* === Animations === */
+@keyframes fadeIn {
+  0% {opacity:0; transform: translateY(-10px);}
+  100% {opacity:1; transform: translateY(0);}
+                   }
