@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abyss REST API</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Fira+Code&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="api.css">
+</head>
+<body>
+  <header>
+    <h1>🌑 Abyss REST API</h1>
+    <p>اضغط على أي قسم لمشاهدة الـ APIs</p>
+  </header>
+
+  <main>
+    <div id="sections" class="grid-container">
+      <p>⏳ جاري تحميل الأقسام...</p>
+    </div>
+
+    <div id="api-bar" class="hidden">
+      <button id="back-btn">🔙 السابق</button>
+      <h2 id="section-title"></h2>
+      <div id="api-list"></div>
+    </div>
+  </main>
+
+  <canvas id="particles"></canvas>
+
+  <script src="api.js"></script>
+</body>
+</html>
