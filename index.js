@@ -58,9 +58,11 @@ function loadPlugins() {
               app.use(routePath, router);
               loadedRoutes.push({ section, file, path: routePath });
               log(`✅ Loaded: ${routePath}`);
+            } else {
+              log(`⚠️ الملف ليس بلوجن صالح: ${filePath}`);
             }
           } catch (err) {
-            log(`❌ خطأ في تحميل ${filePath}: ${err}`);
+            log(`❌ خطأ في تحميل ${filePath}: ${err.message}`);
           }
         }
       }
@@ -90,9 +92,11 @@ app.get("/api/logs", (req, res) => {
 
 // تشغيل السيرفر محلي
 if (!process.env.VERCEL) {
-  app.listen(3000, () =>
-    console.log("🚀 Server running: http://localhost:3000")
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () =>
+    console.log(`🚀 Server running: http://localhost:${PORT}`)
   );
 }
 
+// تصدير للـ serverless
 module.exports = serverless(app);
