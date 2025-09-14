@@ -38,6 +38,7 @@ function loadPlugins() {
             delete require.cache[require.resolve(filePath)];
             const router = require(filePath)(); // كل بلوجن لازم يرجع Router
 
+            // المسار النهائي حسب المجلد والملف
             const endpoint = `/plugin/${folderName}/${fileName}`;
 
             // ربط الـ Router مع endpoint + السماح بالـ trailing slash
@@ -66,8 +67,8 @@ loadPlugins();
 const watcher = chokidar.watch(pluginsDir, { ignoreInitial: true, persistent: true });
 watcher.on('all', () => loadPlugins());
 
-// Endpoint لإظهار قائمة كل الـ APIs ديناميكيًا
-app.get('/api-list', (req, res) => res.json(apiList));
+// Endpoint لإظهار قائمة كل البلوجنز والديناميك APIs
+app.get('/plugin/list', (req, res) => res.json(apiList));
 
 // صفحة عرض الـ API
 app.get('/api-view', (req, res) => {
