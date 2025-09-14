@@ -16,7 +16,6 @@ let loadedRoutes = [];
 
 // تحميل البلوجنز
 async function loadPlugins() {
-  // إزالة routes القديمة
   loadedRoutes.forEach(r => {
     app._router.stack = app._router.stack.filter(
       layer => !(layer.route && layer.route.path === r.path)
@@ -24,10 +23,7 @@ async function loadPlugins() {
   });
   loadedRoutes = [];
 
-  if (!fs.existsSync(pluginsDir)) {
-    console.warn(`⚠️ مجلد plugins غير موجود: ${pluginsDir}`);
-    return;
-  }
+  if (!fs.existsSync(pluginsDir)) return;
 
   const sections = fs.readdirSync(pluginsDir);
 
@@ -40,15 +36,12 @@ async function loadPlugins() {
       for (const file of files) {
         if (file.endsWith(".js")) {
           const filePath = path.join(sectionPath, file);
-
           try {
-            // منع الكاش عند إعادة الاستيراد
             const plugin = await import(pathToFileURL(filePath).href + `?update=${Date.now()}`);
-
             if (typeof plugin.default === "function") {
               const routePath = `/api/${section}`;
               const router = express.Router();
-              plugin.default(router, express); // تمرير Router لكل بلوجن
+              plugin.default(router, express);
               app.use(routePath, router);
               loadedRoutes.push({ section, file, path: routePath });
               console.log(`✅ Loaded: ${routePath} from ${file}`);
@@ -62,7 +55,7 @@ async function loadPlugins() {
   }
 }
 
-// مراقبة البلوجنز لإعادة التحميل تلقائيًا
+// مراقبة البلوجنز
 function watchPlugins() {
   if (!fs.existsSync(pluginsDir)) return;
 
@@ -73,6 +66,37 @@ function watchPlugins() {
     }
   });
 }
+
+// Route افتراضي للصفحة الرئيسية مع زر إعادة التحميل
+app.get("/", (req, res) => {
+  res.send(`
+    <html>
+    <head>
+      <title>Abyss API</title>
+    </head>
+    <body style="font-family:sans-serif; background:#111; color:#0f0; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
+      <h1>Abyss API</h1>
+      <p>عدد البلوجنز المحملة: ${loadedRoutes.length}</p>
+      <button id="reload" style="padding:10px 20px; font-size:16px; cursor:pointer; margin-top:20px;">🔄 إعادة تحميل البلوجنز</button>
+
+      <script>
+        document.getElementById('reload').addEventListener('click', () => {
+          fetch('/api/reload')
+            .then(res => res.json())
+            .then(data => alert('✅ Reloaded: ' + data.loaded + ' plugins'))
+            .catch(err => alert('❌ Error: ' + err));
+        });
+      </script>
+    </body>
+    </html>
+  `);
+});
+
+// Endpoint لإعادة تحميل البلوجنز من الزر
+app.get("/api/reload", async (req, res) => {
+  await loadPlugins();
+  res.json({ loaded: loadedRoutes.length });
+});
 
 // Endpoint يعرض قائمة الـ APIs
 app.get("/api/list", async (req, res) => {
