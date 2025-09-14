@@ -39,7 +39,10 @@ function loadPlugins() {
             const router = require(filePath)(); // كل بلوجن لازم يرجع Router
 
             const endpoint = `/plugin/${folderName}/${fileName}`;
+
+            // ربط الـ Router مع endpoint + السماح بالـ trailing slash
             app.use(endpoint, router);
+            app.use(endpoint + '/', router);
 
             // إضافة layer الخاص بالراوتر للمصفوفة
             const layer = app._router.stack[app._router.stack.length - 1];
