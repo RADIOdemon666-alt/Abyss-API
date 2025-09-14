@@ -1,12 +1,11 @@
-export default (express) => {
+// plugin/download/api.js
+const express = require("express");
+
+module.exports = () => {
   const router = express.Router();
 
-  router.get("/", (req, res) => {
-    res.json({ message: "Hello from example API!" });
-  });
-
-  router.get("/test", (req, res) => {
-    res.json({ message: "Test route works!" });
+  router.get("/hello", (req, res) => {
+    res.json({ message: "Hello from Download API!" });
   });
 
   return router;
