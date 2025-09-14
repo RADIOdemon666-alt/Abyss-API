@@ -9,24 +9,25 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// مسار مجلد الـ plugins
 const pluginsDir = path.join(__dirname, "plugin");
-
-// نخلي public متاح
 app.use(express.static(path.join(__dirname, "public")));
 
-// نخزن الـ APIs المحملة
 let loadedRoutes = [];
 
-// دالة تحميل الـ plugins
+// تحميل البلوجنز
 async function loadPlugins() {
-  // تفريغ القديم
+  // إزالة routes القديمة
   loadedRoutes.forEach(r => {
     app._router.stack = app._router.stack.filter(
       layer => !(layer.route && layer.route.path === r.path)
     );
   });
   loadedRoutes = [];
+
+  if (!fs.existsSync(pluginsDir)) {
+    console.warn(`⚠️ مجلد plugins غير موجود: ${pluginsDir}`);
+    return;
+  }
 
   const sections = fs.readdirSync(pluginsDir);
 
@@ -41,14 +42,14 @@ async function loadPlugins() {
           const filePath = path.join(sectionPath, file);
 
           try {
-            // import ESM مع كسر الكاش (query وهمية)
-            const plugin = await import(
-              pathToFileURL(filePath).href + "?update=" + Date.now()
-            );
+            // منع الكاش عند إعادة الاستيراد
+            const plugin = await import(pathToFileURL(filePath).href + `?update=${Date.now()}`);
 
             if (typeof plugin.default === "function") {
               const routePath = `/api/${section}`;
-              app.use(routePath, plugin.default(express));
+              const router = express.Router();
+              plugin.default(router, express); // تمرير Router لكل بلوجن
+              app.use(routePath, router);
               loadedRoutes.push({ section, file, path: routePath });
               console.log(`✅ Loaded: ${routePath} from ${file}`);
             }
@@ -61,16 +62,28 @@ async function loadPlugins() {
   }
 }
 
+// مراقبة البلوجنز لإعادة التحميل تلقائيًا
+function watchPlugins() {
+  if (!fs.existsSync(pluginsDir)) return;
+
+  fs.watch(pluginsDir, { recursive: true }, (eventType, filename) => {
+    if (filename && filename.endsWith(".js")) {
+      console.log(`🔄 Detected change in plugin: ${filename}. Reloading plugins...`);
+      loadPlugins();
+    }
+  });
+}
+
 // Endpoint يعرض قائمة الـ APIs
 app.get("/api/list", async (req, res) => {
   await loadPlugins();
   res.json(loadedRoutes);
 });
 
-// أول تحميل
-await loadPlugins();
-
 // تشغيل السيرفر
-app.listen(PORT, () => {
-  console.log(`🚀 Server running: http://localhost:${PORT}`);
+loadPlugins().then(() => {
+  watchPlugins(); // بدء المراقبة
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running: http://localhost:${PORT}`);
+  });
 });
