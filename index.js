@@ -12,37 +12,43 @@ app.use(express.urlencoded({ extended: true }));
 
 const pluginsDir = path.join(__dirname, 'plugin');
 let apiRouters = [];
+let apiList = {}; // لتخزين كل الأقسام وملفاتها
 
-// دالة تحميل البلوجنز وإنشاء الـ endpoints
+// دالة تحميل البلوجنز وإنشاء endpoints
 function loadPlugins() {
   // إزالة الراوترات القديمة
   apiRouters.forEach(r => {
     app._router.stack = app._router.stack.filter(layer => layer !== r);
   });
   apiRouters = [];
+  apiList = {};
 
-  // قراءة كل مجلد داخل plugin
   fs.readdirSync(pluginsDir, { withFileTypes: true }).forEach(folder => {
     if (folder.isDirectory()) {
       const folderName = folder.name;
       const folderPath = path.join(pluginsDir, folderName);
 
-      // قراءة كل ملف JS داخل المجلد
+      apiList[folderName] = [];
+
       fs.readdirSync(folderPath).forEach(file => {
         if (file.endsWith('.js')) {
           const fileName = file.replace('.js', '');
           const filePath = path.join(folderPath, file);
           try {
-            delete require.cache[require.resolve(filePath)]; // مسح الكاش
+            delete require.cache[require.resolve(filePath)];
             const routeHandler = require(filePath);
 
-            // إنشاء endpoint ديناميكي
             const endpoint = `/api/${folderName}/${fileName}`;
             app.all(endpoint, (req, res) => {
               routeHandler(req, res, express);
             });
 
             apiRouters.push(endpoint);
+            apiList[folderName].push({
+              name: fileName,
+              endpoint
+            });
+
             console.log(`✅ تم تحميل API: ${endpoint}`);
           } catch (err) {
             console.error(`❌ خطأ في تحميل: ${folderName}/${file}`, err);
@@ -51,6 +57,9 @@ function loadPlugins() {
       });
     }
   });
+
+  // حفظ JSON داخلي للاستخدام في api.html
+  fs.writeFileSync(path.join(__dirname, 'public', 'page', 'api', 'api-list.json'), JSON.stringify(apiList, null, 2));
 }
 
 // تحميل البلوجنز أول مرة
