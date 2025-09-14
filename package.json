@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "REST API Abyss project with dynamic plugins and dark neon theme",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
