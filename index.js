@@ -17,12 +17,13 @@ let apiList = {};
 // دالة تحميل البلوجنز
 function loadPlugins() {
   // إزالة الراوترات القديمة
-  apiRouters.forEach(r => {
-    app._router.stack = app._router.stack.filter(layer => layer !== r);
-  });
-  apiRouters = [];
+  if (apiRouters.length > 0) {
+    app._router.stack = app._router.stack.filter(layer => !apiRouters.includes(layer));
+    apiRouters = [];
+  }
   apiList = {};
 
+  // قراءة مجلد البلوجنز
   fs.readdirSync(pluginsDir, { withFileTypes: true }).forEach(folder => {
     if (folder.isDirectory()) {
       const folderName = folder.name;
@@ -31,24 +32,25 @@ function loadPlugins() {
 
       fs.readdirSync(folderPath).forEach(file => {
         if (file.endsWith('.js')) {
-          const fileName = file.replace('.js', '');
           const filePath = path.join(folderPath, file);
           try {
             delete require.cache[require.resolve(filePath)];
-            const router = require(filePath)(); // استدعاء البلوجن كـ router
+            const plugin = require(filePath);
 
-            const endpoint = `/api/${folderName}/${fileName}`;
+            // كل بلوجن لازم يكون عبارة عن دالة ترجع router وكمان endpoint اختياري
+            const router = plugin.router ? plugin.router : plugin();
+            const endpoint = plugin.endpoint || `/api/${folderName}/${file.replace('.js', '')}`;
+
             app.use(endpoint, router);
-            apiRouters.push(router);
 
-            apiList[folderName].push({
-              name: fileName,
-              endpoint
-            });
+            // إضافة layer الخاص بالراوتر للمصفوفة
+            const layer = app._router.stack[app._router.stack.length - 1];
+            apiRouters.push(layer);
 
+            apiList[folderName].push({ name: file.replace('.js', ''), endpoint });
             console.log(`✅ تم تحميل API: ${endpoint}`);
           } catch (err) {
-            console.error(`❌ خطأ في تحميل: ${folderName}/${file}`, err);
+            console.error(`❌ خطأ في تحميل البلوجن: ${folderName}/${file}`, err);
           }
         }
       });
@@ -61,16 +63,10 @@ loadPlugins();
 
 // مراقبة التغييرات باستخدام chokidar
 const watcher = chokidar.watch(pluginsDir, { ignoreInitial: true, persistent: true });
-
-watcher.on('add', () => loadPlugins());
-watcher.on('unlink', () => loadPlugins());
-watcher.on('addDir', () => loadPlugins());
-watcher.on('unlinkDir', () => loadPlugins());
+watcher.on('all', () => loadPlugins());
 
 // Endpoint لإظهار قائمة كل الـ APIs ديناميكيًا
-app.get('/api-list', (req, res) => {
-  res.json(apiList);
-});
+app.get('/api-list', (req, res) => res.json(apiList));
 
 // صفحة عرض الـ API
 app.get('/api-view', (req, res) => {
