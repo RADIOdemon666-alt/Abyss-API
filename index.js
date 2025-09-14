@@ -12,9 +12,9 @@ app.use(express.urlencoded({ extended: true }));
 
 const pluginsDir = path.join(__dirname, 'plugin');
 let apiRouters = [];
-let apiList = {}; // لتخزين كل الأقسام وملفاتها
+let apiList = {};
 
-// دالة تحميل البلوجنز وإنشاء endpoints
+// دالة تحميل البلوجنز
 function loadPlugins() {
   // إزالة الراوترات القديمة
   apiRouters.forEach(r => {
@@ -27,7 +27,6 @@ function loadPlugins() {
     if (folder.isDirectory()) {
       const folderName = folder.name;
       const folderPath = path.join(pluginsDir, folderName);
-
       apiList[folderName] = [];
 
       fs.readdirSync(folderPath).forEach(file => {
@@ -36,14 +35,12 @@ function loadPlugins() {
           const filePath = path.join(folderPath, file);
           try {
             delete require.cache[require.resolve(filePath)];
-            const routeHandler = require(filePath);
+            const router = require(filePath)(); // استدعاء البلوجن كـ router
 
             const endpoint = `/api/${folderName}/${fileName}`;
-            app.all(endpoint, (req, res) => {
-              routeHandler(req, res, express);
-            });
+            app.use(endpoint, router);
+            apiRouters.push(router);
 
-            apiRouters.push(endpoint);
             apiList[folderName].push({
               name: fileName,
               endpoint
@@ -57,21 +54,23 @@ function loadPlugins() {
       });
     }
   });
-
-  // حفظ JSON داخلي للاستخدام في api.html
-  fs.writeFileSync(path.join(__dirname, 'public', 'page', 'api', 'api-list.json'), JSON.stringify(apiList, null, 2));
 }
 
 // تحميل البلوجنز أول مرة
 loadPlugins();
 
-// مراقبة أي تغييرات باستخدام chokidar
+// مراقبة التغييرات باستخدام chokidar
 const watcher = chokidar.watch(pluginsDir, { ignoreInitial: true, persistent: true });
 
-watcher.on('add', path => loadPlugins());
-watcher.on('unlink', path => loadPlugins());
-watcher.on('addDir', path => loadPlugins());
-watcher.on('unlinkDir', path => loadPlugins());
+watcher.on('add', () => loadPlugins());
+watcher.on('unlink', () => loadPlugins());
+watcher.on('addDir', () => loadPlugins());
+watcher.on('unlinkDir', () => loadPlugins());
+
+// Endpoint لإظهار قائمة كل الـ APIs ديناميكيًا
+app.get('/api-list', (req, res) => {
+  res.json(apiList);
+});
 
 // صفحة عرض الـ API
 app.get('/api-view', (req, res) => {
