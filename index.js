@@ -8,7 +8,7 @@ const PORT = 3000;
 app.use(express.static(path.join(__dirname, 'public')));
 
 // استدعاء الـ API من plugin/download/api.js
-const downloadApi = require('./plugin/download/api.js');
+const downloadApi = require('./plugin/download/api'); // Router مباشرة
 app.use('/api/download', downloadApi); // endpoint كامل: /api/download/hello
 
 // endpoint لعرض صفحة HTML
