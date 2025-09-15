@@ -9,7 +9,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // استدعاء الـ API من plugin/download/api.js
 const downloadApi = require('./plugin/download/api');
-app.use('/api/download', downloadApi); // هذا الـ endpoint: /api/download/hello
+app.use('/api/download', downloadApi); // endpoint كامل: /api/download/hello
 
 // endpoint لعرض صفحة HTML
 app.get('/api', (req, res) => {
