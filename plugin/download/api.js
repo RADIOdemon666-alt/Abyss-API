@@ -1,12 +1,9 @@
-// plugin/download/api.js
 const express = require('express');
+const router = express.Router();
 
-module.exports = () => {
-  const router = express.Router();
+// مثال endpoint
+router.get('/hello', (req, res) => {
+  res.json({ message: "Hello from Download API!" });
+});
 
-  router.get('/hello', (req, res) => {
-    res.json({ message: 'Hello from Download API!' });
-  });
-
-  return router;
-};
+module.exports = router;
