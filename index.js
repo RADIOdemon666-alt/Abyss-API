@@ -1,78 +1,23 @@
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
-const chokidar = require('chokidar');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
+// مسار الملفات الثابتة
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-const pluginsDir = path.join(__dirname, 'plugin');
-let apiRouters = [];
-let apiList = {};
+// استدعاء الـ API من plugin/download/api.js
+const downloadApi = require('./plugin/download/api');
+app.use('/api/download', downloadApi); // هذا الـ endpoint: /api/download/hello
 
-// دالة تحميل البلوجنز
-function loadPlugins() {
-  // إزالة الراوترات القديمة
-  if (apiRouters.length > 0) {
-    app._router.stack = app._router.stack.filter(layer => !apiRouters.includes(layer));
-    apiRouters = [];
-  }
-  apiList = {};
-
-  fs.readdirSync(pluginsDir, { withFileTypes: true }).forEach(folder => {
-    if (folder.isDirectory()) {
-      const folderName = folder.name;
-      const folderPath = path.join(pluginsDir, folderName);
-      apiList[folderName] = [];
-
-      fs.readdirSync(folderPath).forEach(file => {
-        if (file.endsWith('.js')) {
-          const fileName = file.replace('.js', '');
-          const filePath = path.join(folderPath, file);
-
-          try {
-            delete require.cache[require.resolve(filePath)];
-            const router = require(filePath)(); // كل بلوجن لازم يرجع Router
-
-            // المسار النهائي حسب المجلد والملف
-            const endpoint = `/plugin/${folderName}/${fileName}`;
-
-            // ربط الـ Router مع endpoint + السماح بالـ trailing slash
-            app.use(endpoint, router);
-            app.use(endpoint + '/', router);
-
-            // إضافة layer الخاص بالراوتر للمصفوفة
-            const layer = app._router.stack[app._router.stack.length - 1];
-            apiRouters.push(layer);
-
-            apiList[folderName].push({ name: fileName, endpoint });
-            console.log(`✅ تم تحميل API: ${endpoint}`);
-          } catch (err) {
-            console.error(`❌ خطأ في تحميل البلوجن: ${folderName}/${file}`, err);
-          }
-        }
-      });
-    }
-  });
-}
-
-// تحميل البلوجنز أول مرة
-loadPlugins();
-
-// مراقبة التغييرات باستخدام chokidar
-const watcher = chokidar.watch(pluginsDir, { ignoreInitial: true, persistent: true });
-watcher.on('all', () => loadPlugins());
-
-// Endpoint لإظهار قائمة كل البلوجنز والديناميك APIs
-app.get('/plugin/list', (req, res) => res.json(apiList));
-
-// صفحة عرض الـ API
-app.get('/api-view', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'page', 'api', 'api.html'));
+// endpoint لعرض صفحة HTML
+app.get('/api', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/page/api/api.html'));
 });
 
-app.listen(PORT, () => console.log(`🚀 السيرفر شغال على http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Download API endpoint: http://localhost:${PORT}/api/download/hello`);
+  console.log(`API page: http://localhost:${PORT}/api`);
+});
