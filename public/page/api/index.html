@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>Abyss API - Alastor Style</title>
+  <title>Abyss API – Alastor Theme Sidebar + Sections</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- خطوط -->
-  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Orbitron:wght@500&display=swap" rel="stylesheet">
-  <!-- أيقونات FontAwesome -->
+  <!-- الخط -->
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <!-- FontAwesome أيقونات -->
   <script src="https://kit.fontawesome.com/5b4c8f5c1b.js" crossorigin="anonymous"></script>
   <style>
+    * { box-sizing: border-box; padding: 0; margin: 0; }
+
     body {
       margin: 0;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
       background: #000;
       font-family: 'Orbitron', sans-serif;
       color: #fff;
@@ -21,276 +21,346 @@
       position: relative;
     }
 
-    /* خلفية دخان */
+    /* صور الخلفية الكبيرة متغيرة */
     body::before {
       content: "";
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: radial-gradient(circle at center, rgba(100,0,0,0.6) 0%, rgba(0,0,0,1) 100%);
-      z-index: -2;
+      background: url('https://images.wallpapers.com/yourpickedimage1.jpg') center center / cover no-repeat;
+      opacity: 0.4;
+      filter: blur(5px);
+      z-index: -3;
     }
     body::after {
       content: "";
       position: fixed;
       top: 0; left: 0;
       width: 200%; height: 200%;
-      background: url("https://i.ibb.co/Y0cgxn3/smoke-red.png") repeat;
-      opacity: 0.25;
-      animation: smokeMove 40s linear infinite;
-      z-index: -1;
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(255,0,0,0.04),
+        rgba(255,0,0,0.04) 10px,
+        transparent 10px,
+        transparent 20px
+      );
+      animation: bgMove 20s linear infinite;
+      z-index: -2;
     }
-    @keyframes smokeMove {
-      from { transform: translate(0,0); }
-      to { transform: translate(-500px,-500px); }
+    @keyframes bgMove {
+      0% { background-position: 0 0; }
+      100% { background-position: 200px 200px; }
     }
 
-    /* NAVBAR */
-    .navbar {
-      display: flex;
-      overflow-x: auto;
-      white-space: nowrap;
-      background: rgba(0, 0, 0, 0.9);
-      border-bottom: 2px solid #ff0022;
-      box-shadow: 0 0 20px #ff0022;
+    /* زر القائمة */
+    .menu-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      font-size: 2.2rem;
+      color: #ff0033;
+      cursor: pointer;
+      z-index: 1000;
+      transition: transform 0.5s ease, color 0.3s;
+      text-shadow: 0 0 10px #ff0033, 0 0 20px #ff0033;
+    }
+    .menu-btn.open {
+      transform: rotate(180deg);
+      color: #fff;
+      text-shadow: 0 0 15px #ff0033, 0 0 30px #ff0033;
+    }
+
+    /* القائمة الجانبية */
+    .sidebar {
       position: fixed;
       top: 0;
-      width: 100%;
-      z-index: 100;
-      scrollbar-width: none;
+      right: -280px;
+      width: 280px;
+      height: 100%;
+      background: rgba(20,0,0,0.98);
+      box-shadow: -5px 0 30px rgba(255,0,51,0.7);
+      transition: right 0.5s ease;
+      z-index: 999;
+      padding-top: 80px;
+      overflow-y: auto;
     }
-    .navbar::-webkit-scrollbar { display: none; }
-    .navbar button {
-      background: transparent;
-      border: none;
-      color: #ff0022;
-      font-size: 1rem;
-      padding: 15px 25px;
-      cursor: pointer;
-      transition: 0.3s;
-      text-transform: uppercase;
-      font-weight: bold;
-    }
-    .navbar button:hover,
-    .navbar button.active {
-      background: #ff0022;
-      color: #000;
-      box-shadow: 0 0 25px #ff0022, 0 0 60px #ff0022;
+    .sidebar.open {
+      right: 0;
     }
 
-    /* HEADER */
-    .header {
-      margin-top: 100px;
+    /* عناصر القائمة */
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar ul li {
+      opacity: 0;
+      transform: translateX(30px);
+      transition: all 0.5s ease;
+      margin: 18px 0;
+    }
+    .sidebar.open ul li {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    /* staggered delays */
+    .sidebar.open ul li:nth-child(1) { transition-delay: 0.1s; }
+    .sidebar.open ul li:nth-child(2) { transition-delay: 0.2s; }
+    .sidebar.open ul li:nth-child(3) { transition-delay: 0.3s; }
+    .sidebar.open ul li:nth-child(4) { transition-delay: 0.4s; }
+    .sidebar.open ul li:nth-child(5) { transition-delay: 0.5s; }
+    .sidebar.open ul li:nth-child(6) { transition-delay: 0.6s; }
+    .sidebar.open ul li:nth-child(7) { transition-delay: 0.7s; }
+
+    .sidebar ul li a {
+      display: flex;
+      align-items: center;
+      font-size: 1.3rem;
+      color: #ff0033;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-shadow: 0 0 5px #000, 0 0 10px #ff0033;
+      transition: all 0.3s ease;
+    }
+    .sidebar ul li a i {
+      margin-left: 10px;
+      font-size: 1.5rem;
+    }
+    .sidebar ul li a:hover {
+      background: rgba(255,0,51,0.3);
+      transform: scale(1.05) rotate(-1deg);
+      box-shadow: 0 0 20px #ff0033, 0 0 40px #ff0000;
+    }
+
+    .sidebar .card-dev {
+      margin: 30px 20px;
+      padding: 15px;
+      background: #110000;
+      border: 2px solid #ff0033;
+      border-radius: 12px;
       text-align: center;
-      animation: fadeIn 1s ease;
+      box-shadow: 0 0 20px #ff0033;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .header img {
-      width: 120px;
-      filter: drop-shadow(0 0 15px #ff0022);
-      animation: pulse 3s infinite;
+    .sidebar .card-dev img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #ff0033;
+      margin-bottom: 10px;
+      box-shadow: 0 0 20px #ff0033;
     }
-    .header h1 {
-      font-family: 'Creepster', cursive;
-      font-size: 3rem;
-      color: #ff0022;
-      text-shadow: 0 0 20px #ff0022, 0 0 50px #ff0022;
-      margin: 20px 0 0;
+    .sidebar .card-dev:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #ff0033, 0 0 60px #ff0000;
     }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-
-    /* SECTION TITLE */
-    .section-bar {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 1.8rem;
-      color: #ff0022;
-      text-shadow: 0 0 15px #ff0022;
+    .sidebar .card-dev p {
+      font-size: 1.2rem;
+      color: #ff0033;
+      text-shadow: 0 0 5px #ff0000;
     }
 
-    /* CONTENT */
-    .content {
+    /* المحتوى الرئيسي للأقسام */
+    .section-title {
+      margin: 40px 30px 20px 30px;
+      font-size: 2rem;
+      color: #ff0033;
+      text-shadow: 0 0 15px #ff0033;
+    }
+    .cards-container {
       display: none;
-      padding: 30px;
-      animation: fadeIn 0.6s ease;
+      padding: 0 30px 30px 30px;
     }
-    .content.active {
+    .cards-container.active {
       display: grid;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    /* CARDS */
-    .cards {
-      display: grid;
-      gap: 25px;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      margin-top: 20px;
+      gap: 25px;
     }
     .card {
-      background: rgba(20, 0, 0, 0.8);
-      border: 2px solid #ff0022;
+      background: rgba(20,0,0,0.85);
+      border: 2px solid #ff0033;
       border-radius: 12px;
       padding: 20px;
       text-align: center;
-      transition: 0.3s;
-      box-shadow: 0 0 20px rgba(255, 0, 34, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 20px rgba(255,0,50,0.4);
     }
     .card:hover {
       transform: translateY(-8px) rotate(-1deg);
-      box-shadow: 0 0 35px #ff0022, 0 0 70px #ff0022;
+      box-shadow: 0 0 40px #ff0033, 0 0 80px #ff0000;
     }
     .card h2 {
       margin: 10px 0;
-      color: #ff0022;
+      font-size: 1.5rem;
+      color: #ff0033;
+      text-shadow: 0 0 10px #ff0033;
     }
     .card p {
-      color: #aaa;
+      color: #ccc;
       font-size: 0.95rem;
       margin-bottom: 15px;
     }
     .card i {
       font-size: 2rem;
-      color: #ff0022;
+      color: #ff0033;
       margin-bottom: 10px;
-      text-shadow: 0 0 10px #ff0022;
+      text-shadow: 0 0 10px #ff0033;
     }
     .card .button {
       display: inline-block;
       padding: 10px 20px;
-      font-size: 0.9rem;
-      color: #ff0022;
-      border: 2px solid #ff0022;
+      font-size: 0.95rem;
+      color: #ff0033;
+      border: 2px solid #ff0033;
       border-radius: 8px;
       text-decoration: none;
-      transition: 0.3s;
+      transition: all 0.3s ease;
     }
     .card .button:hover {
-      background: #ff0022;
+      background: #ff0033;
       color: #000;
-      box-shadow: 0 0 20px #ff0022;
+      box-shadow: 0 0 30px #ff0033, 0 0 60px #ff0000;
+    }
+
+    /* صغير responsive */
+    @media (max-width: 600px) {
+      .sidebar {
+        width: 220px;
+      }
+      .card h2 { font-size: 1.3rem; }
+      .card .button { padding: 8px 16px; font-size: 0.85rem; }
+      .section-title { margin: 30px 20px; font-size: 1.7rem; }
     }
   </style>
 </head>
 <body>
-  <!-- NAVBAR -->
-  <div class="navbar">
-    <button data-section="tools" class="active">Tools</button>
-    <button data-section="download">Download</button>
-    <button data-section="search">Search</button>
-    <button data-section="games">Games</button>
-    <button data-section="api">AI</button>
-  </div>
+  <!-- زر لفتح القائمة -->
+  <div class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></div>
 
-  <!-- HEADER -->
-  <div class="header">
-    <img src="https://i.ibb.co/Bj4dnKg/alastor.png" alt="Alastor">
-    <h1>Abyss API Service</h1>
-  </div>
+  <!-- القائمة الجانبية مع الأقسام -->
+  <nav class="sidebar" id="sidebar">
+    <ul>
+      <li data-section="tools"><a href="#"><i class="fas fa-tools"></i> الأدوات (Tools)</a></li>
+      <li data-section="download"><a href="#"><i class="fas fa-download"></i> التحميل (Download)</a></li>
+      <li data-section="search"><a href="#"><i class="fas fa-search"></i> البحث (Search)</a></li>
+      <li data-section="games"><a href="#"><i class="fas fa-gamepad"></i> الألعاب (Games)</a></li>
+      <li data-section="api"><a href="#"><i class="fas fa-server"></i> API الرئيسي (Main API)</a></li>
+      <!-- تقدر تضيف أقسام جديدة هنا -->
+      <!-- <li data-section="blog"><a href="#"><i class="fas fa-blog"></i> مدونة (Blog)</a></li> -->
+    </ul>
 
-  <!-- SECTION TITLE -->
-  <div id="sectionTitle" class="section-bar">Tools Section</div>
+    <div class="card-dev">
+      <img src="https://i.ibb.co/Bj4dnKg/alastor.png" alt="Alastor">
+      <p>المطور: Radio Demon</p>
+    </div>
+  </nav>
 
-  <!-- CONTENT SECTIONS -->
-  <!-- ✅ Tools Section -->
-  <div id="tools" class="content active">
-    <div class="cards">
+  <!-- العنوان و المحتوى لكل قسم -->
+  <div id="tools" class="section-content">
+    <h2 class="section-title">Tools</h2>
+    <div class="cards-container active">
       <div class="card">
         <i class="fas fa-language"></i>
         <h2>Translate API</h2>
         <p>تحويل النصوص لأي لغة بدقة عالية. يدعم أكثر من 100 لغة.</p>
-        <a href="https://api-abyss.vercel.app/api/tr" class="button">Try Now</a>
+        <a href="https://api-abyss.vercel.app/api/tr" class="button">جرب الآن</a>
       </div>
       <div class="card">
         <i class="fas fa-shield-alt"></i>
         <h2>Security Tools</h2>
         <p>أدوات لفحص الروابط والملفات وحماية المستخدمين من المخاطر.</p>
-        <a href="#" class="button">Check</a>
+        <a href="#" class="button">تحقق</a>
       </div>
-      <!-- ✨ هنا تقدر تضيف Card جديد داخل قسم Tools -->
     </div>
   </div>
 
-  <!-- ✅ Download Section -->
-  <div id="download" class="content">
-    <div class="cards">
+  <div id="download" class="section-content">
+    <h2 class="section-title">Download</h2>
+    <div class="cards-container">
       <div class="card">
         <i class="fas fa-video"></i>
         <h2>Download Video</h2>
         <p>تحميل فيديوهات من مواقع متعددة بجودة عالية.</p>
-        <a href="#" class="button">Download</a>
+        <a href="#" class="button">تحميل</a>
       </div>
       <div class="card">
         <i class="fas fa-music"></i>
         <h2>Download Audio</h2>
         <p>تحميل ملفات صوتية بجودة ممتازة من عدة منصات.</p>
-        <a href="#" class="button">Download</a>
+        <a href="#" class="button">تحميل</a>
       </div>
-      <!-- ✨ تقدر تضيف Card جديد هنا لقسم Download -->
     </div>
   </div>
 
-  <!-- ✅ Search Section -->
-  <div id="search" class="content">
-    <div class="cards">
+  <div id="search" class="section-content">
+    <h2 class="section-title">Search</h2>
+    <div class="cards-container">
       <div class="card">
         <i class="fas fa-search"></i>
         <h2>Google Search API</h2>
         <p>ابحث مباشرة عبر Google باستخدام واجهة API سهلة.</p>
-        <a href="#" class="button">Search</a>
+        <a href="#" class="button">بحث</a>
       </div>
-      <!-- ✨ تقدر تضيف Card جديد هنا لقسم Search -->
     </div>
   </div>
 
-  <!-- ✅ Games Section -->
-  <div id="games" class="content">
-    <div class="cards">
+  <div id="games" class="section-content">
+    <h2 class="section-title">Games</h2>
+    <div class="cards-container">
       <div class="card">
         <i class="fas fa-gamepad"></i>
         <h2>Game Info</h2>
         <p>عرض معلومات وتفاصيل الألعاب المفضلة عبر API.</p>
-        <a href="#" class="button">Play</a>
+        <a href="#" class="button">تشغيل</a>
       </div>
-      <!-- ✨ هنا تقدر تضيف Card جديد داخل قسم Games -->
     </div>
   </div>
 
-  <!-- ✅ API Section -->
-  <div id="api" class="content">
-    <div class="cards">
+  <div id="api" class="section-content">
+    <h2 class="section-title">Main API</h2>
+    <div class="cards-container">
       <div class="card">
         <i class="fas fa-server"></i>
         <h2>Main API</h2>
         <p>دليل شامل لكل الـ Endpoints المتاحة في Abyss API.</p>
-        <a href="#" class="button">Explore</a>
+        <a href="#" class="button">استكشف</a>
       </div>
-      <!-- ✨ هنا تقدر تضيف Card جديد داخل قسم API -->
     </div>
   </div>
 
   <script>
-    // سويتش بين الأقسام
-    const buttons = document.querySelectorAll('.navbar button');
-    const sections = document.querySelectorAll('.content');
-    const title = document.getElementById('sectionTitle');
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const sectionContents = document.querySelectorAll('.section-content');
+    const navItems = document.querySelectorAll('.sidebar ul li');
 
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        buttons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+    let sidebarOpen = false;
 
-        sections.forEach(sec => sec.classList.remove('active'));
-        document.getElementById(btn.dataset.section).classList.add('active');
+    menuBtn.addEventListener('click', () => {
+      sidebarOpen = !sidebarOpen;
+      sidebar.classList.toggle('open', sidebarOpen);
+      menuBtn.classList.toggle('open', sidebarOpen);
+      menuBtn.innerHTML = sidebarOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+    });
 
-        // تحديث العنوان العلوي
-        title.textContent = btn.textContent + " Section";
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const sec = item.getAttribute('data-section');
+        // hide all
+        sectionContents.forEach(sc => {
+          sc.querySelector('.cards-container').classList.remove('active');
+        });
+        // show selected
+        const target = document.getElementById(sec);
+        if (target) {
+          target.querySelector('.cards-container').classList.add('active');
+        }
+        // ممكن تغلق القائمة بعد اختيار القسم إذا تحب
+        // sidebar.classList.remove('open');
+        // menuBtn.classList.remove('open');
+        // sidebarOpen = false;
       });
     });
   </script>
