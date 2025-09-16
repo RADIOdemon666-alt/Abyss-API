@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/page/api/api.html');
+  res.sendFile(__dirname + './public/page/api/api.html');
 });
 
 app.use('/api/tr', tools_tr);
