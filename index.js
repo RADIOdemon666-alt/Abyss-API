@@ -1,4 +1,4 @@
-import express from 'express';
+pagefrom 'express';
 import fetch from 'node-fetch';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -15,11 +15,11 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + './public/page/api/api.html');
+  res.sendFile(__dirname + '/public/page/api/index.tml');
 });
 
 app.use('/api/tr', tools_tr);
 
-app.listen(port, () => {
+app.listen(portdirname> {
   console.log(`Server running on port ${port}`);
 });
