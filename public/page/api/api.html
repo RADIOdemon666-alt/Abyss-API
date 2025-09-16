@@ -7,7 +7,7 @@
   <style>
     body {
       margin: 0;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -15,20 +15,29 @@
       background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
       font-family: 'Orbitron', sans-serif;
       color: #fff;
-      overflow: hidden;
+      overflow-x: hidden;
+      padding: 40px 20px;
     }
 
     h1 {
-      font-size: 2.8rem;
+      font-size: 3rem;
       color: #00f6ff;
       text-shadow: 0 0 10px #00f6ff, 0 0 20px #00f6ff, 0 0 40px #00f6ff;
-      margin-bottom: 40px;
-      letter-spacing: 2px;
+      margin-bottom: 30px;
+      letter-spacing: 3px;
+      animation: glow 2s ease-in-out infinite alternate;
+      text-align: center;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #00f6ff, 0 0 20px #00f6ff; }
+      to { text-shadow: 0 0 20px #00f6ff, 0 0 60px #00f6ff; }
     }
 
     .button {
-      padding: 15px 35px;
-      font-size: 1.2rem;
+      display: inline-block;
+      padding: 12px 28px;
+      font-size: 1rem;
       color: #00f6ff;
       text-decoration: none;
       border: 2px solid #00f6ff;
@@ -37,6 +46,7 @@
       transition: 0.3s ease-in-out;
       text-transform: uppercase;
       letter-spacing: 1.5px;
+      margin-top: 15px;
     }
 
     .button::before {
@@ -69,17 +79,16 @@
       100% { box-shadow: 0 0 5px #00f6ff, 0 0 10px #00f6ff; }
     }
 
-    /* خلفية متحركة Grid */
     .grid {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       background-size: 40px 40px;
-      background-image: linear-gradient(to right, rgba(0, 246, 255, 0.1) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(0, 246, 255, 0.1) 1px, transparent 1px);
-      animation: moveGrid 10s linear infinite;
+      background-image: linear-gradient(to right, rgba(0, 246, 255, 0.08) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(0, 246, 255, 0.08) 1px, transparent 1px);
+      animation: moveGrid 12s linear infinite;
       z-index: -1;
     }
 
@@ -87,11 +96,70 @@
       from { background-position: 0 0; }
       to { background-position: 40px 40px; }
     }
+
+    .services {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid #00f6ff;
+      border-radius: 15px;
+      padding: 20px;
+      width: 250px;
+      text-align: center;
+      transition: 0.3s;
+      box-shadow: 0 0 15px rgba(0, 246, 255, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 0 25px #00f6ff, 0 0 50px #00f6ff;
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #00f6ff;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: #ccc;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
   <div class="grid"></div>
   <h1>Welcome to Abyss API Service</h1>
-  <a href="https://api-abyss.vercel.app/api/tr" class="button">Translate API</a>
+
+  <div class="services">
+    <div class="card">
+      <h2>Translate API</h2>
+      <p>تحويل النصوص لأي لغة بدقة عالية.</p>
+      <a href="https://api-abyss.vercel.app/api/tr" class="button">Try Now</a>
+    </div>
+    <div class="card">
+      <h2>Download API</h2>
+      <p>تحميل فيديوهات وصوتيات بسهولة وسرعة.</p>
+      <a href="#" class="button">Explore</a>
+    </div>
+    <div class="card">
+      <h2>Security Tools</h2>
+      <p>أدوات فحص الروابط والملفات لحماية المستخدمين.</p>
+      <a href="#" class="button">Check</a>
+    </div>
+    <div class="card">
+      <h2>AI Services</h2>
+      <p>تحليل النصوص والردود باستخدام تقنيات الذكاء الاصطناعي.</p>
+      <a href="#" class="button">Use AI</a>
+    </div>
+  </div>
 </body>
 </html>
