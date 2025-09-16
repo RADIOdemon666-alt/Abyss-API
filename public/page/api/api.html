@@ -1,32 +1,97 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Abyss REST API</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Fira+Code&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="api.css">
+  <title>Abyss API</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
+      font-family: 'Orbitron', sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      color: #00f6ff;
+      text-shadow: 0 0 10px #00f6ff, 0 0 20px #00f6ff, 0 0 40px #00f6ff;
+      margin-bottom: 40px;
+      letter-spacing: 2px;
+    }
+
+    .button {
+      padding: 15px 35px;
+      font-size: 1.2rem;
+      color: #00f6ff;
+      text-decoration: none;
+      border: 2px solid #00f6ff;
+      border-radius: 10px;
+      position: relative;
+      transition: 0.3s ease-in-out;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .button::before {
+      content: "";
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      right: -4px;
+      bottom: -4px;
+      border: 2px solid #00f6ff;
+      border-radius: 12px;
+      opacity: 0;
+      transition: 0.3s;
+      animation: pulse 2s infinite;
+    }
+
+    .button:hover {
+      background: #00f6ff;
+      color: #000;
+      box-shadow: 0 0 20px #00f6ff, 0 0 40px #00f6ff;
+    }
+
+    .button:hover::before {
+      opacity: 1;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 5px #00f6ff, 0 0 10px #00f6ff; }
+      50% { box-shadow: 0 0 20px #00f6ff, 0 0 40px #00f6ff; }
+      100% { box-shadow: 0 0 5px #00f6ff, 0 0 10px #00f6ff; }
+    }
+
+    /* خلفية متحركة Grid */
+    .grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: 40px 40px;
+      background-image: linear-gradient(to right, rgba(0, 246, 255, 0.1) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(0, 246, 255, 0.1) 1px, transparent 1px);
+      animation: moveGrid 10s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes moveGrid {
+      from { background-position: 0 0; }
+      to { background-position: 40px 40px; }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>🌑 Abyss REST API</h1>
-    <p>اضغط على أي قسم لمشاهدة الـ APIs</p>
-  </header>
-
-  <main>
-    <div id="sections" class="grid-container">
-      <p>⏳ جاري تحميل الأقسام...</p>
-    </div>
-
-    <div id="api-bar" class="hidden">
-      <button id="back-btn">🔙 السابق</button>
-      <h2 id="section-title"></h2>
-      <div id="api-list"></div>
-    </div>
-  </main>
-
-  <canvas id="particles"></canvas>
-
-  <script src="api.js"></script>
+  <div class="grid"></div>
+  <h1>Welcome to Abyss API Service</h1>
+  <a href="api/tr" class="button">Translate API</a>
 </body>
 </html>
