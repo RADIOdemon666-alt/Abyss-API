@@ -2,123 +2,179 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Abyss API</title>
+  <title>Abyss API - Alastor Style</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <!-- خطوط -->
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <!-- أيقونات FontAwesome -->
+  <script src="https://kit.fontawesome.com/5b4c8f5c1b.js" crossorigin="anonymous"></script>
   <style>
     body {
       margin: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
+      background: #000;
       font-family: 'Orbitron', sans-serif;
       color: #fff;
       overflow-x: hidden;
+      position: relative;
     }
 
-    /* === NAVBAR === */
+    /* خلفية دخان */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle at center, rgba(100,0,0,0.6) 0%, rgba(0,0,0,1) 100%);
+      z-index: -2;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 200%; height: 200%;
+      background: url("https://i.ibb.co/Y0cgxn3/smoke-red.png") repeat;
+      opacity: 0.25;
+      animation: smokeMove 40s linear infinite;
+      z-index: -1;
+    }
+    @keyframes smokeMove {
+      from { transform: translate(0,0); }
+      to { transform: translate(-500px,-500px); }
+    }
+
+    /* NAVBAR */
     .navbar {
       display: flex;
-      justify-content: center;
+      overflow-x: auto;
+      white-space: nowrap;
       background: rgba(0, 0, 0, 0.9);
-      border-bottom: 2px solid #00f6ff;
-      box-shadow: 0 0 15px #00f6ff;
+      border-bottom: 2px solid #ff0022;
+      box-shadow: 0 0 20px #ff0022;
       position: fixed;
       top: 0;
       width: 100%;
       z-index: 100;
+      scrollbar-width: none;
     }
+    .navbar::-webkit-scrollbar { display: none; }
     .navbar button {
       background: transparent;
       border: none;
-      color: #00f6ff;
+      color: #ff0022;
       font-size: 1rem;
-      padding: 15px 20px;
+      padding: 15px 25px;
       cursor: pointer;
       transition: 0.3s;
       text-transform: uppercase;
+      font-weight: bold;
     }
     .navbar button:hover,
     .navbar button.active {
-      background: #00f6ff;
+      background: #ff0022;
       color: #000;
-      box-shadow: 0 0 15px #00f6ff;
+      box-shadow: 0 0 25px #ff0022, 0 0 60px #ff0022;
     }
 
-    /* === SECTION TITLE BAR === */
+    /* HEADER */
+    .header {
+      margin-top: 100px;
+      text-align: center;
+      animation: fadeIn 1s ease;
+    }
+    .header img {
+      width: 120px;
+      filter: drop-shadow(0 0 15px #ff0022);
+      animation: pulse 3s infinite;
+    }
+    .header h1 {
+      font-family: 'Creepster', cursive;
+      font-size: 3rem;
+      color: #ff0022;
+      text-shadow: 0 0 20px #ff0022, 0 0 50px #ff0022;
+      margin: 20px 0 0;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* SECTION TITLE */
     .section-bar {
-      margin-top: 70px;
+      margin-top: 40px;
       text-align: center;
       font-size: 1.8rem;
-      color: #00f6ff;
-      text-shadow: 0 0 15px #00f6ff;
-      animation: fadeDown 0.6s ease;
+      color: #ff0022;
+      text-shadow: 0 0 15px #ff0022;
     }
 
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* === CONTENT === */
+    /* CONTENT */
     .content {
       display: none;
-      padding: 20px;
-      animation: fadeIn 0.5s ease;
+      padding: 30px;
+      animation: fadeIn 0.6s ease;
     }
     .content.active {
       display: grid;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.9); }
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* === CARDS === */
+    /* CARDS */
     .cards {
       display: grid;
-      gap: 20px;
+      gap: 25px;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       margin-top: 20px;
     }
     .card {
-      background: rgba(0, 0, 0, 0.7);
-      border: 2px solid #00f6ff;
+      background: rgba(20, 0, 0, 0.8);
+      border: 2px solid #ff0022;
       border-radius: 12px;
       padding: 20px;
       text-align: center;
       transition: 0.3s;
-      box-shadow: 0 0 15px rgba(0, 246, 255, 0.3);
-      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(255, 0, 34, 0.3);
     }
     .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 0 25px #00f6ff, 0 0 50px #00f6ff;
+      transform: translateY(-8px) rotate(-1deg);
+      box-shadow: 0 0 35px #ff0022, 0 0 70px #ff0022;
     }
     .card h2 {
-      margin-bottom: 10px;
-      color: #00f6ff;
+      margin: 10px 0;
+      color: #ff0022;
     }
     .card p {
-      color: #ccc;
+      color: #aaa;
       font-size: 0.95rem;
       margin-bottom: 15px;
+    }
+    .card i {
+      font-size: 2rem;
+      color: #ff0022;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px #ff0022;
     }
     .card .button {
       display: inline-block;
       padding: 10px 20px;
       font-size: 0.9rem;
-      color: #00f6ff;
-      border: 2px solid #00f6ff;
+      color: #ff0022;
+      border: 2px solid #ff0022;
       border-radius: 8px;
       text-decoration: none;
       transition: 0.3s;
     }
     .card .button:hover {
-      background: #00f6ff;
+      background: #ff0022;
       color: #000;
+      box-shadow: 0 0 20px #ff0022;
     }
   </style>
 </head>
@@ -129,91 +185,112 @@
     <button data-section="download">Download</button>
     <button data-section="search">Search</button>
     <button data-section="games">Games</button>
-    <button data-section="api">API</button>
+    <button data-section="api">AI</button>
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <img src="https://i.ibb.co/Bj4dnKg/alastor.png" alt="Alastor">
+    <h1>Abyss API Service</h1>
   </div>
 
   <!-- SECTION TITLE -->
   <div id="sectionTitle" class="section-bar">Tools Section</div>
 
   <!-- CONTENT SECTIONS -->
+  <!-- ✅ Tools Section -->
   <div id="tools" class="content active">
     <div class="cards">
       <div class="card">
+        <i class="fas fa-language"></i>
         <h2>Translate API</h2>
-        <p>تحويل النصوص لأي لغة بدقة عالية.</p>
+        <p>تحويل النصوص لأي لغة بدقة عالية. يدعم أكثر من 100 لغة.</p>
         <a href="https://api-abyss.vercel.app/api/tr" class="button">Try Now</a>
       </div>
       <div class="card">
+        <i class="fas fa-shield-alt"></i>
         <h2>Security Tools</h2>
-        <p>أدوات فحص الروابط والملفات.</p>
+        <p>أدوات لفحص الروابط والملفات وحماية المستخدمين من المخاطر.</p>
         <a href="#" class="button">Check</a>
       </div>
+      <!-- ✨ هنا تقدر تضيف Card جديد داخل قسم Tools -->
     </div>
   </div>
 
+  <!-- ✅ Download Section -->
   <div id="download" class="content">
     <div class="cards">
       <div class="card">
+        <i class="fas fa-video"></i>
         <h2>Download Video</h2>
-        <p>تحميل فيديوهات بسهولة.</p>
+        <p>تحميل فيديوهات من مواقع متعددة بجودة عالية.</p>
         <a href="#" class="button">Download</a>
       </div>
       <div class="card">
+        <i class="fas fa-music"></i>
         <h2>Download Audio</h2>
-        <p>تحميل صوتيات بسرعة.</p>
+        <p>تحميل ملفات صوتية بجودة ممتازة من عدة منصات.</p>
         <a href="#" class="button">Download</a>
       </div>
+      <!-- ✨ تقدر تضيف Card جديد هنا لقسم Download -->
     </div>
   </div>
 
+  <!-- ✅ Search Section -->
   <div id="search" class="content">
     <div class="cards">
       <div class="card">
+        <i class="fas fa-search"></i>
         <h2>Google Search API</h2>
-        <p>البحث مباشرة عبر Google.</p>
+        <p>ابحث مباشرة عبر Google باستخدام واجهة API سهلة.</p>
         <a href="#" class="button">Search</a>
       </div>
+      <!-- ✨ تقدر تضيف Card جديد هنا لقسم Search -->
     </div>
   </div>
 
+  <!-- ✅ Games Section -->
   <div id="games" class="content">
     <div class="cards">
       <div class="card">
+        <i class="fas fa-gamepad"></i>
         <h2>Game Info</h2>
-        <p>API لمعلومات الألعاب.</p>
+        <p>عرض معلومات وتفاصيل الألعاب المفضلة عبر API.</p>
         <a href="#" class="button">Play</a>
       </div>
+      <!-- ✨ هنا تقدر تضيف Card جديد داخل قسم Games -->
     </div>
   </div>
 
+  <!-- ✅ API Section -->
   <div id="api" class="content">
     <div class="cards">
       <div class="card">
+        <i class="fas fa-server"></i>
         <h2>Main API</h2>
-        <p>دليل جميع الـ Endpoints.</p>
+        <p>دليل شامل لكل الـ Endpoints المتاحة في Abyss API.</p>
         <a href="#" class="button">Explore</a>
       </div>
+      <!-- ✨ هنا تقدر تضيف Card جديد داخل قسم API -->
     </div>
   </div>
 
   <script>
+    // سويتش بين الأقسام
     const buttons = document.querySelectorAll('.navbar button');
-    const contents = document.querySelectorAll('.content');
-    const sectionTitle = document.getElementById('sectionTitle');
+    const sections = document.querySelectorAll('.content');
+    const title = document.getElementById('sectionTitle');
 
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
-        // تفعيل الزر
         buttons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // اظهار القسم
-        const section = btn.getAttribute('data-section');
-        contents.forEach(c => c.classList.remove('active'));
-        document.getElementById(section).classList.add('active');
+        sections.forEach(sec => sec.classList.remove('active'));
+        document.getElementById(btn.dataset.section).classList.add('active');
 
-        // تغيير العنوان
-        sectionTitle.textContent = btn.textContent + " Section";
+        // تحديث العنوان العلوي
+        title.textContent = btn.textContent + " Section";
       });
     });
   </script>
