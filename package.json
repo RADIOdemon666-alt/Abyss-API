@@ -1,29 +1,39 @@
 {
-  "name": "rest-api-abyss",
+  "name": "nodejs",
   "version": "1.0.0",
-  "description": "REST API Abyss project with dynamic plugins and dark neon theme",
+  "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node index.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "@whiskeysockets/baileys": "^6.5.1",
-    "axios": "^1.7.7",
-    "cheerio": "^1.0.0-rc.12",
-    "express": "^5.1.0",
-    "serverless-http": "^3.0.0",
+    "@types/node": "^18.0.6",
+    "express": "^4.19.2",
+    "canvas": "^2.9.0",
+    "jimp": "^0.16.1",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "axios": "^1.7.2",
+    "file-type": "^19.4.0",
+    "form-data": "^4.0.0",
+    "formdata-node": "^6.0.3",
+    "image-size": "^1.1.1",
     "node-fetch": "^3.3.2",
+    "google-translate-api-x": "*",
+    "simple-git": "^3.25.0",
+    "cheerio": "github:AikerDev/cheeiro",
+    "discord.js": "^12.5.3",
     "puppeteer": "^23.6.0",
     "cookie-parser": "1.4.7",
     "puppeteer-cluster": "^0.23.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "chokidar": "^3.5.3"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.7"
-  },
-  "author": "Radio Demon",
-  "license": "MIT"
+    "chokidar": "^3.5.3" 
+  }
 }
