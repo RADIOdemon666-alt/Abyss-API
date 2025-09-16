@@ -1,23 +1,25 @@
-const express = require('express');
-const path = require('path');
+import express from 'express';
+import fetch from 'node-fetch';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+import tools_tr from './routes/tools-tr.js';
 
 const app = express();
-const PORT = 3000;
+const port = process.env.PORT || 3000;
 
-// مسار الملفات الثابتة
-app.use(express.static(path.join(__dirname, 'public')));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// استدعاء الـ API من plugin/download/api.js
-const downloadApi = require('./plugin/download/api'); // Router مباشرة
-app.use('/api/download', downloadApi); // endpoint كامل: /api/download/hello
 
-// endpoint لعرض صفحة HTML
-app.get('/api', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/page/api/api.html'));
+app.use(express.static(__dirname));
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/page/api/api.html');
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-  console.log(`Download API endpoint: http://localhost:${PORT}/api/download/hello`);
-  console.log(`API page: http://localhost:${PORT}/api`);
+app.use('/api/tr', tools_tr);
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
