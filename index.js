@@ -1,4 +1,4 @@
-pagefrom 'express';
+indexress';
 import fetch from 'node-fetch';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/page/api/index.tml');
+  res.sendFile(__dirname + '/public/page/api/index.html');
 });
 
 app.use('/api/tr', tools_tr);
