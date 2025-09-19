@@ -10,7 +10,6 @@ import pkg from 'soundcloud-scraper';
 const { Client: SCClient } = pkg;
 
 // دلوقتي ممكن تستخدم SCClient بشكل طبيعي:
-const scClient = new SCClient();
 const app = express();
 const port = 3000;
 const TEMP_DIR = './temp';
