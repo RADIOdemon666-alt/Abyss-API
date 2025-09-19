@@ -2,8 +2,15 @@ import express from 'express';
 import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { Client as SCClient } from 'soundcloud-scraper';
+// بدل هذا السطر:
+// import { Client as SCClient } from 'soundcloud-scraper';
 
+// استخدم هذا:
+import pkg from 'soundcloud-scraper';
+const { Client: SCClient } = pkg;
+
+// دلوقتي ممكن تستخدم SCClient بشكل طبيعي:
+const scClient = new SCClient();
 const app = express();
 const port = 3000;
 const TEMP_DIR = './temp';
