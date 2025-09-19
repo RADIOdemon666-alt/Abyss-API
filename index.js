@@ -5,7 +5,7 @@ import path from 'path';
 
 // استيراد الروتات
 import tools_tr from './routes/tools-tr.js';
-import SoundCloud from './routes/download-SoundCloud.js';
+import soundcloud from './routes/download-SoundCloud.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 
 // مسارات API
 app.use('/api/tr', tools_tr);
-app.use('/api/SoundCloud', SoundCloud);
+app.use('/api/SoundCloud', soundcloud);
 
 // تشغيل السيرفر
 app.listen(port, () => {
